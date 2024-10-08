@@ -66,8 +66,8 @@
       web.src = url;
 
       window.addEventListener("message", function(e){
-        console.log("parent message")
-        console.log(e)
+        //console.log("parent message")
+        //console.log(e)
         if(e.data == "_requestFullscreen"){
           document.body.requestFullscreen();
         }
