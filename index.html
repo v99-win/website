@@ -56,7 +56,7 @@
       else{
         query = "?_iframe=true"
       }
-      const url = `https://v9910.win/${query}`;
+      const url = `https://v-99.win/${query}`;
       const web = document.querySelector("iframe");
 
       web.onload = function(){
@@ -65,14 +65,52 @@
 
       web.src = url;
 
+      const requestFullscreen = document.body.requestFullscreen || document.body.webkitRequestFullscreen
+      const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen
+      const fullscreenEnabled = document.fullscreenEnabled
+      function doRequestFullscreen(callback){
+        if(fullscreenEnabled && requestFullscreen){
+          requestFullscreen.call(document.body)
+            .then(()=>{
+              callback && callback(true)
+            })
+            .catch(()=>{
+              callback && callback(false)
+            })
+        }
+        else{
+          callback && callback(false)
+        }
+      }
+      function doExitFullscreen(callback){
+        if(fullscreenEnabled && document.fullscreen && exitFullscreen){
+          exitFullscreen.call(document)
+            .then(()=>{
+              callback && callback(true)
+            })
+            .catch(()=>{
+              callback && callback(false)
+            })
+        }
+        else{
+          callback && callback(false)
+        }
+      }
+
       window.addEventListener("message", function(e){
         //console.log("parent message")
         //console.log(e)
         if(e.data == "_requestFullscreen"){
-          document.body.requestFullscreen();
+          doRequestFullscreen(ok =>{
+            const msg = ok ? "requestFullscreenSuccess" : "requestFullscreenFail"
+            web.contentWindow.window.postMessage(msg, "*")
+          })
         }
         if(e.data == "_exitFullscreen"){
-          document.exitFullscreen();
+          doExitFullscreen(ok =>{
+            const msg = ok ? "exitFullscreenSuccess" : "exitFullscreenFail"
+            web.contentWindow.window.postMessage(msg, "*")
+          })
         }
       })
 	  
